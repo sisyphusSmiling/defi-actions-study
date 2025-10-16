@@ -5,12 +5,15 @@ flow transactions send ./FlowActions/cadence/tests/transactions/deploy_swap_pair
 # create the initial swap pair
 flow transactions send ./FlowActions/cadence/transactions/increment-fi/create_swap_pair.cdc \
     'A.0ae53cb6e3f42a79.FlowToken.Vault' 'A.f8d6e0586b0a20c7.TokenA.Vault' false
+# mint TokenA
+flow transactions send ./FlowActions/cadence/tests/transactions/mint_tokens.cdc \
+    0xf8d6e0586b0a20c7 100000.0 /storage/tokenAAdmin /public/tokenAVault
 # add initial liquidity to the new swap pair
 flow transactions send ./FlowActions/cadence/transactions/increment-fi/add_liquidity.cdc \
     'A.0ae53cb6e3f42a79.FlowToken' \
     'A.f8d6e0586b0a20c7.TokenA' \
-    500.0 \
-    500.0 \
+    100000.0 \
+    100000.0 \
     0.0 \
     0.0 \
     184467440737.0 \
