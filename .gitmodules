@@ -1,0 +1,3 @@
+[submodule "FlowActions"]
+	path = FlowActions
+	url = git@github.com:onflow/FlowActions.git
