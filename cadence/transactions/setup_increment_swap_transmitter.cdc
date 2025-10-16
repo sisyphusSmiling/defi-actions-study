@@ -18,7 +18,8 @@ import "TransmitTokensWorkflow"
 ///
 transaction(
     transmitterStoragePath: StoragePath,
-    maxAmount: UFix64?,
+    maxTransmitAmount: UFix64?,
+    upToAmount: UFix64?,
     // swapPath: [String] // Could extend this txn to allow for custom swap paths
 ) {
 
@@ -55,8 +56,8 @@ transaction(
         )
 
         // set up the out Vault if it doesn't exist
-        if signer.storage.type(at: inVaultData.storagePath) == nil {
-            signer.storage.save(<-inVaultData.createEmptyVault(), to: inVaultData.storagePath)
+        if signer.storage.type(at: outVaultData.storagePath) == nil {
+            signer.storage.save(<-outVaultData.createEmptyVault(), to: outVaultData.storagePath)
             let cap = signer.capabilities.storage.issue<&{FungibleToken.Vault}>(outVaultData.storagePath)
             signer.capabilities.unpublish(outVaultData.receiverPath)
             signer.capabilities.unpublish(outVaultData.metadataPath)
@@ -88,7 +89,7 @@ transaction(
         )
         // create the SwapSink's inner Sink connector
         let vaultSink = FungibleTokenConnectors.VaultSink(
-            max: 10_000.0,
+            max: upToAmount,
             depositVault: receiverCapability,
             uniqueID: uniqueID
         )
@@ -102,7 +103,7 @@ transaction(
         self.transmitter <- TransmitTokensWorkflow.createTransmitter(
             tokenOrigin: origin,
             tokenDestination: swapSink,
-            maxAmount: maxAmount
+            maxAmount: maxTransmitAmount
         )
     }
 
